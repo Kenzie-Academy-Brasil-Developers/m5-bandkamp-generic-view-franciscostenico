@@ -1,4 +1,8 @@
+# folders
 venv
 __pycache__
 .vscode
-db.sqlite3
+
+# files
+*.sqlite3
+.env
