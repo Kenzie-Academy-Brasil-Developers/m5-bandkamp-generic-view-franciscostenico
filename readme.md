@@ -1,71 +1,102 @@
-# M5 - BandKamp Generic View
+#   **M5 Band-Kamp API**
 
-## Instalação dos pacotes de teste
+Essa aplicação é responsável por fornecer ao usuário uma RestAPI desenvolvida em Django, capaz de criar uma interação com um CRUD de usuários completo, bem como com a possibilidade de criação e listagens de Albuns e Músicas.
 
-- Verifique se os pacotes `pytest` e/ou `pytest-testdox` estão instalados globalmente em seu sistema:
-```shell
-pip list
-```
-- Caso seja listado o `pytest` e/ou `pytest-testdox` e/ou `pytest-django` em seu ambiente global, utilize os seguintes comando para desinstalá-los globalmente:
-```shell
-pip uninstall pytest
-```
+<br>
 
-```shell
-pip uninstall pytest-testdox
-```
+___
+##  DER - Diagrama da aplicação
 
-```shell
-pip uninstall pytest-django
-```
-
-A partir disso, prossiga com os passos:
-
-1. Crie seu ambiente virtual:
-```bash
-python -m venv venv
-```
-
-2. Ative seu venv:
-```bash
-# linux:
-source venv/bin/activate
-
-# windows:
-.\venv\Scripts\activate
-```
-
-3. Instale o pacote `pytest-testdox`:
-```shell
-pip install pytest-testdox pytest-django
-```
+<br>
 
 
-4. Agora é só rodar os testes no diretório principal do projeto:
-```shell
-pytest --testdox -vvs
+![BandKamp - ERD](./DER-BandKamp.svg)
+
+<br>
+
+**É feito uma interação entre 3 tabelas, sendo elas:**
+
+1. `Users`: Tabela de cadastro de usuários. Faz uma relação **1:N** com a tabela *Albums*, onde um usuário pode criar vários albuns, enquanto que um álbum pode pertencer a apenas um usuário;
+2.  `Albums`: Tabela para cadastro de álbums. Faz uma relação de **1:N** com a tabela *Songs*, onde um álbum pode conter várias músicas, mas uma música só pode pertencer a um álbum. Tambem faz uma relação de **N:1** com a table *Users*, já citada no item 1;
+3.  `Songs`: Tabela para cadastro de músicas. Faz uma relação de **N:1** com a tabela *Albums*, já citada no item 2;
+___
+
+##  **Endpoints disponíveis**
+
+Todas as rotas da API compartilham de uma mesma *URL Base*: **http://localhost:8000/api/**
+
+<br>
+
+### **`POST users/`** Criação de um novo usuário
+
+Como esta é apenas uma aplicação experimental, todos os usuários cadastrados serão superuser.
+
+<br>
+
+**Corpo de requisição:**
+```json
+{
+	"username": "franciscoSt",
+	"email": "francisco@teste.com",
+	"password": "1234Teste",
+	"first_name": "Francisco",
+	"last_name": "Stenico"
+}
 ```
 
-5. Caso queira um log mais resumido, basta executar com os testes sem as flags **verbose**:
-```shell
-pytest --testdox
+**Corpo de resposta**
+
+<p><span style="color: #00af4d; font-weight: 700">201 </span><span style="color: #66ffaa">CREATED</span>: Usuário cadastrado com sucesso.</p>
+
+```json
+{
+	"id": 1,
+	"username": "tchescost",
+	"email": "francisco@teste.com",
+	"first_name": "Francisco",
+	"last_name": "Stenico",
+	"is_superuser": true
+}
 ```
 
-## Rodando os testes por partes
+<p><span style="color: #df3d3d; font-weight: 700">400 </span><span style="color: #ff8888">BAD REQUEST</span>: O username e o email escolhido já estão em uso.</p>
 
-Caso você tenha interesse em rodar apenas um diretório de testes específico, pode utilizar o comando:
-
-- Rodando testes de users:
-```python
-pytest --testdox -vvs tests/users/
+```json
+{
+	"username": [
+		"A user with that username already exists."
+	],
+	"email": [
+		"This field must be unique."
+	]
+}
 ```
 
-- Rodando testes de albums:
-```python
-pytest --testdox -vvs tests/albums/
+<p><span style="color: #df3d3d; font-weight: 700">400 </span><span style="color: #ff8888">BAD REQUEST</span>: Campos obrigatórios ausentes.</p>
+
+**Obs:** Em todas as requisições, caso algum campo obrigatório esteja ausente, será retornado um ***400 - BAD REQUEST*** no mesmo modelo abaixo:
+
+```json
+{
+	"email": [
+		"This field is required."
+	],
+	"password": [
+		"This field is required."
+	]
+}
 ```
 
-- Rodando testes de songs:
-```python
-pytest --testdox -vvs tests/songs/
-```
+<br>
+
+___
+
+### **`POST users/login`** Login de usuário
+
+<br>
+
+Esta rota retornará por padrão dois tokens de autenticação, um `refresh` token e um `access` token.
+
+<br>
+
+**Corpo da requisição**
