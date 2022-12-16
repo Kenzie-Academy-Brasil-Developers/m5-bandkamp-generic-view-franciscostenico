@@ -435,6 +435,6 @@ ___
     <a href="https://www.linkedin.com/in/franciscostenico/">
         <img alt="Francisco-LinkedIn" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" />
     </a>
-	<p style="text-decoration: italic">Francisco Correr Stenico - Desenvolvedor Web Full-Stack</p>
+	<p style="font-size: .75rem; color: #0a9afa; font-weight: 700">Francisco Correr Stenico - Desenvolvedor Web Full-Stack</p>
 </div>
 
